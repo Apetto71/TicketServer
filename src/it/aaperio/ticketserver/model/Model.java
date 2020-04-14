@@ -1,14 +1,15 @@
 package it.aaperio.ticketserver.model;
 
-import org.apache.log4j.Logger;
 
+import org.apache.log4j.Logger;
+import it.aaperio.ticketserver.Configuration;
 
 public class  Model {
 
 	private static Model model = null;
 	
 	static private Logger logger;
-	
+	private Configuration config;
 	// Elenco delle sessioni attive
 	// elenco delle connessioni attive
 	// tutti i ticket in stato aperto
@@ -41,4 +42,16 @@ public class  Model {
 		// Preparazione del pool di connesioni
 		
 	}
+
+
+	public Configuration getConfig() {
+		return config;
+	}
+
+
+	public void setConfig(Configuration config) {
+		this.config = config;
+	}
+
+
 }

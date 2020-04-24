@@ -44,10 +44,7 @@ public class Ticketserver {
 		    client.start();
 		}
 		
-		finally {
-		serverSocket.close();
-		logger.info("Uscita dal Programma - Il serve non accetta più connessioni");
-	}
+		 
 	}
 
 }

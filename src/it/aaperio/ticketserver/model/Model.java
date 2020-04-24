@@ -1,6 +1,8 @@
 package it.aaperio.ticketserver.model;
 
 
+import java.util.concurrent.ConcurrentLinkedDeque;
+
 import org.apache.log4j.Logger;
 import it.aaperio.ticketserver.Configuration;
 
@@ -10,14 +12,19 @@ public class  Model {
 	
 	static private Logger logger;
 	private Configuration config;
+	private ConcurrentLinkedDeque<String> codamsginput;
+	
 	// Elenco delle sessioni attive
 	// elenco delle connessioni attive
 	// tutti i ticket in stato aperto
 	
 	
-	
-	private  Model() {} 		// costruttore vuoto
-	
+	private  Model() {
+		logger = Logger.getLogger(Model.class);
+		logger.info("Inizializzazione del Model");
+		codamsginput = new ConcurrentLinkedDeque ();
+		Model.inizialization();
+	} 		
 	
 	// Costruttore Singleton
 	public static Model getModel() {
@@ -26,7 +33,7 @@ public class  Model {
 		if (model == null) {
 			m = new Model();
 			model = m;
-			Model.inizialization();
+			
 		} else m = model;
 		
 		return m;
@@ -34,8 +41,7 @@ public class  Model {
 	
 	private static void inizialization() {
 		// Inserire l'inizializzazione di tutti i dati
-		logger = Logger.getLogger(Model.class);
-		logger.info("Inizializzazione del Model");
+		
 		
 		// Caricamento del Database e preparazione della struttura dati
 		
@@ -43,15 +49,17 @@ public class  Model {
 		
 	}
 
-
 	public Configuration getConfig() {
 		return config;
 	}
-
 
 	public void setConfig(Configuration config) {
 		this.config = config;
 	}
 
+	public void addMsgToQueue (String msg) {
+		this.codamsginput.add(msg);
+		logger.info("Aggiunto alla coda messaggi il messaggio " + msg); 
+	}
 
 }

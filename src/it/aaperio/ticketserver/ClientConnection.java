@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 
 import org.apache.log4j.Logger;
 import it.aaperio.ticketserver.model.*;
@@ -17,6 +18,7 @@ public class ClientConnection extends Thread {
 	private Socket sock;							//Socket per la connessione al client
 	private ObjectInputStream in;					//Buffer per leggere sullo stream
 	private ObjectOutputStream out;					//Buffer per scrivere sullo stream
+	private boolean connected = false;
 	private Logger logger = Logger.getLogger(ClientConnection.class);	// logger
 
 	// Costruttore della classe con input il riferimento alla socket
@@ -44,34 +46,62 @@ public class ClientConnection extends Thread {
 	
 	//Scrivo il metodo run
 	public void run() {
-			// creazione stream di input da clientSocket
+			
+		// creazione stream di output su clientSocket
+        try {
+			logger.debug("Creo i buffer di scrittura su socket");
+			out = new ObjectOutputStream(sock.getOutputStream());
+			out.flush();
+		} catch (IOException e) {
+			logger.error("Errore inizializzazione Stream Writer", e);
+			this.connected = false;
+		}
+  
+		// creazione stream di input da clientSocket
+	    try {
+			logger.debug("creo il buffer di ricezione sul socket");
+			in = new ObjectInputStream(sock.getInputStream());
+			this.connected = true;
+		} catch (IOException e) {
+			logger.error("Errore inizializzazione Stream Reader", e);
+			this.connected = false;
+		}
 	        
-			try {
-				in = new ObjectInputStream(new BufferedInputStream(sock.getInputStream()));
-			} catch (IOException e) {
-				logger.error("Errore inizializzazione Stream Reader", e);
-			}
-	        
-	        // creazione stream di output su clientSocket
-	        try {
-				logger.debug("Creo i buffer di ricezione e scrittura su socket");
-				out = new ObjectOutputStream(new BufferedOutputStream(sock.getOutputStream()));
-			} catch (IOException e) {
-				logger.error("Errore inizializzazione Stream Writer");
-				logger.error(e);
-			}
-	        
+	        if (this.connected) {
+	        	logger.info("La connessione con il client è attiva");
+	        } else { logger.debug("La connessione non è andata a buon fine");}
 	        // Devo ottenere dal sistema il numero di sessione, da inviare al client per poi attendere da lui ulteriori richieste
 	        
 	        
-	        // Invio al client collegato un messaggio di benvenuto
-	        try	{
-	        	out.writeBytes("Welcom to the Hotel California, your IP is: " + sock.getInetAddress());
-	        } catch (IOException e) {
+	        // Mi metto in ascolto per la ricezione dei messaggi
+	        while (connected) {
+	        	String msgrcv = new String();
+	        	try {
+					msgrcv = (String) this.in.readObject();
+					logger.info("messaggio ricevuto: " + msgrcv);
+				} catch (ClassNotFoundException | IOException e) {
+					logger.error("Errore in lettura sullo stream", e);
+					closeSock();;
+					} 
+	        	// Ho ricevuto un messaggio quindi lo metto in coda ai messaggi da lavorare
+	        	if (msgrcv == "CLOSE") {
+	        		logger.info("Ricevuta richiesta di chiusura dal client");
+	        		closeSock();
+	        		model.addMsgToQueue(msgrcv);
+	        	}
 	        	
 	        }
-	        
 	        // Mi predispongo a ricevere un messaggio per ora sotto forma di stringa dal client connesso
-	        
+
 	}     
+	
+	public void closeSock() {
+		try {
+			logger.info("La connessione è stata terminata, chiudo la socket");
+			this.sock.close();
+			this.connected = false;
+		} catch (IOException e) {
+			logger.error("Non riesco a chiudere la socket");
+		}
+	}
 }

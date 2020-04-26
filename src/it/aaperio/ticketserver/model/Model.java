@@ -1,7 +1,8 @@
 package it.aaperio.ticketserver.model;
 
 
-import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.log4j.Logger;
 import it.aaperio.ticketserver.Configuration;
@@ -12,7 +13,7 @@ public class  Model {
 	
 	static private Logger logger;
 	private Configuration config;
-	private ConcurrentLinkedDeque<String> codamsginput;
+	private Queue<Messaggio> codamsginput = new ConcurrentLinkedQueue<> () ;
 	
 	// Elenco delle sessioni attive
 	// elenco delle connessioni attive
@@ -22,7 +23,7 @@ public class  Model {
 	private  Model() {
 		logger = Logger.getLogger(Model.class);
 		logger.info("Inizializzazione del Model");
-		codamsginput = new ConcurrentLinkedDeque ();
+		codamsginput = new ConcurrentLinkedQueue<> ();
 		Model.inizialization();
 	} 		
 	
@@ -57,7 +58,11 @@ public class  Model {
 		this.config = config;
 	}
 
-	public void addMsgToQueue (String msg) {
+	/**
+	 * Aggiunge alla coda il messaggio ricevuto 
+	 * @param msg: MEssaggio ricevuto da inserire
+	 */
+	public void addMsgToQueue (Messaggio msg) {
 		this.codamsginput.add(msg);
 		logger.info("Aggiunto alla coda messaggi il messaggio " + msg); 
 	}

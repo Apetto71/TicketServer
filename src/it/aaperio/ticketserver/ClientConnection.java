@@ -50,8 +50,8 @@ public class ClientConnection extends Thread {
 		// creazione stream di output su clientSocket
         try {
 			logger.debug("Creo i buffer di scrittura su socket");
-			out = new ObjectOutputStream(sock.getOutputStream());
-			out.flush();
+			this.out = new ObjectOutputStream(sock.getOutputStream());
+			this.out.flush();
 		} catch (IOException e) {
 			logger.error("Errore inizializzazione Stream Writer", e);
 			this.connected = false;
@@ -60,7 +60,7 @@ public class ClientConnection extends Thread {
 		// creazione stream di input da clientSocket
 	    try {
 			logger.debug("creo il buffer di ricezione sul socket");
-			in = new ObjectInputStream(sock.getInputStream());
+			this.in = new ObjectInputStream(sock.getInputStream());
 			this.connected = true;
 		} catch (IOException e) {
 			logger.error("Errore inizializzazione Stream Reader", e);
@@ -68,36 +68,35 @@ public class ClientConnection extends Thread {
 		}
 	        
 	        if (this.connected) {
-	        	logger.info("La connessione con il client è attiva");
-	        } else { logger.debug("La connessione non è andata a buon fine");}
+	        	logger.info("La connessione con il client ï¿½ attiva");
+	        } else { logger.debug("La connessione non ï¿½ andata a buon fine");}
 	        // Devo ottenere dal sistema il numero di sessione, da inviare al client per poi attendere da lui ulteriori richieste
 	        
 	        
 	        // Mi metto in ascolto per la ricezione dei messaggi
 	        while (connected) {
-	        	String msgrcv = new String();
+	        	Messaggio msgrcv = new Messaggio();
 	        	try {
-					msgrcv = (String) this.in.readObject();
-					logger.info("messaggio ricevuto: " + msgrcv);
-				} catch (ClassNotFoundException | IOException e) {
-					logger.error("Errore in lettura sullo stream", e);
-					closeSock();;
+						msgrcv = (Messaggio) this.in.readObject();
+					} catch (IOException e) {
+						logger.error("Lettura dallo Streamin errore", e);
+						closeSock();
+					} catch (ClassNotFoundException e) {
+						logger.error("Errore in ricezione dallo Stream", e) ;
 					} 
+					logger.info("messaggio ricevuto: " + msgrcv) ;
+				 
 	        	// Ho ricevuto un messaggio quindi lo metto in coda ai messaggi da lavorare
-	        	if (msgrcv == "CLOSE") {
-	        		logger.info("Ricevuta richiesta di chiusura dal client");
-	        		closeSock();
-	        		model.addMsgToQueue(msgrcv);
+	        	model.addMsgToQueue(msgrcv) ;
 	        	}
 	        	
 	        }
 	        // Mi predispongo a ricevere un messaggio per ora sotto forma di stringa dal client connesso
-
-	}     
+     
 	
 	public void closeSock() {
 		try {
-			logger.info("La connessione è stata terminata, chiudo la socket");
+			logger.info("La connessione ï¿½ stata terminata, chiudo la socket");
 			this.sock.close();
 			this.connected = false;
 		} catch (IOException e) {

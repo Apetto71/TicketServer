@@ -7,6 +7,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.time.LocalDate;
+import java.util.UUID;
 
 import org.apache.log4j.Logger;
 import it.aaperio.ticketserver.model.*;
@@ -15,9 +17,10 @@ public class ClientConnection extends Thread {
 	
 	private Thread ct = Thread.currentThread(); 	// Riferimento al Thread creato per la singola connessione client
 	private Model model;								// Riferimento al Model
-	private Socket sock;							//Socket per la connessione al client
-	private ObjectInputStream in;					//Buffer per leggere sullo stream
-	private ObjectOutputStream out;					//Buffer per scrivere sullo stream
+	private Socket sock;							// Socket per la connessione al client
+	private UUID sessionId; 						// ID univoco di sessione
+	private ObjectInputStream in;					// Buffer per leggere sullo stream
+	private ObjectOutputStream out;					// Buffer per scrivere sullo stream
 	private boolean connected = false;
 	private Logger logger = Logger.getLogger(ClientConnection.class);	// logger
 
@@ -29,6 +32,8 @@ public class ClientConnection extends Thread {
 		try {
 			this.sock = clientSock;
 			logger.debug("Creata la socket e salvata nella variabile di istanza sock: " + sock);
+			sessionId = new UUID(LocalDate.now().toEpochDay(), (long) System.nanoTime());
+			logger.info("Creata SessionID: " +sessionId.toString() );
 		} catch (Exception e) {
 			logger.error(e);
 		}
@@ -46,7 +51,9 @@ public class ClientConnection extends Thread {
 	
 	//Scrivo il metodo run
 	public void run() {
-			
+		
+		// Aggiungo il client all'elenco dei client connessi sul model
+		this.model.addClientConnessi(this);
 		// creazione stream di output su clientSocket
         try {
 			logger.debug("Creo i buffer di scrittura su socket");
@@ -70,7 +77,8 @@ public class ClientConnection extends Thread {
 	        if (this.connected) {
 	        	logger.info("La connessione con il client ï¿½ attiva");
 	        } else { logger.debug("La connessione non ï¿½ andata a buon fine");}
-	        // Devo ottenere dal sistema il numero di sessione, da inviare al client per poi attendere da lui ulteriori richieste
+	        
+	        // Devo ottenere dal sistema il numero di sessione, da inviare al client per poi attendere da lui l'invio utente e password
 	        
 	        
 	        // Mi metto in ascolto per la ricezione dei messaggi
@@ -86,12 +94,19 @@ public class ClientConnection extends Thread {
 					} 
 					logger.info("messaggio ricevuto: " + msgrcv) ;
 				 
-	        	// Ho ricevuto un messaggio quindi lo metto in coda ai messaggi da lavorare
-	        	model.addMsgToQueue(msgrcv) ;
+	        	// Verifica che il sessionId sia coerente con la connessione e solo in questo caso aggiungo
+				//  alla coda delle attività da svolgere
+				if (msgrcv.getSessionId().equals(this.sessionId)) {
+					model.addMsgToQueue(msgrcv) ;
+				} else {
+					logger.error("Numero di sessione non corrispondente. Chiudo la connessione");
+					this.closeSock();
+					break; 			// Esco dal loop 
+				}
 	        	}
 	        	
+	        logger.info ("SessionId " + sessionId.toString() + " terminata");
 	        }
-	        // Mi predispongo a ricevere un messaggio per ora sotto forma di stringa dal client connesso
      
 	
 	public void closeSock() {
@@ -102,5 +117,9 @@ public class ClientConnection extends Thread {
 		} catch (IOException e) {
 			logger.error("Non riesco a chiudere la socket");
 		}
+		
+		// Se sono arrivato a chiudere la socket devo anche cancellare la connessione
+		// dall'elenco di connessioni del model
+		this.model.removeClientConnessi(this);
 	}
 }

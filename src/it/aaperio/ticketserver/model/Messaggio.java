@@ -1,6 +1,7 @@
 package it.aaperio.ticketserver.model;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * Oggetto per trasferire messaggi ed informazioni da server a client
@@ -12,70 +13,80 @@ import java.io.Serializable;
 public class Messaggio implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
-	private String messaggio = null;
-	private String[] parametri = null;
-	private Long sessionId = null;
-	
-	// Costruttore del messaggio vuoto
-	public Messaggio() {}
+	private Comandi comando = null;
+	private UUID sessionId = null;
+	private Object parametro;
 	
 	
-	// Costruttore di messsaggio con tutti i parametri
-	public Messaggio(Long sid, String m, String[] p) {
-		this.sessionId = sid;
-		this.messaggio = m;
-		this.parametri = p;
+	
+		
+	/**
+	 * Costruttore di un messaggio vuoto.
+	 */
+	public Messaggio() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 
 
 	/**
-	 * @return the messaggio
+	 * Construttore di un nuovo messaggio specificando il sessionId
+	 * @param sessionId: ID della sessione 
 	 */
-	public String getMessaggio() {
-		return messaggio;
+
+	public Messaggio(UUID s) {
+		super();
+		this.sessionId = s;
+	}
+
+	
+	/**
+	 * Costruttore di un nuovo messaggio specificando sessiomId e comando da eseguire
+	 * @param comando: Comando da eseguire
+	 * @param sessionId: Sessione a cui è destinato o da cui proviene il comando 
+	 */
+	public Messaggio(Comandi comando, UUID sessionId) {
+		super();
+		this.comando = comando;
+		this.sessionId = sessionId;
 	}
 
 
-	/**
-	 * @param messaggio the messaggio to set
-	 */
-	public void setMessaggio(String messaggio) {
-		this.messaggio = messaggio;
+
+	public Comandi getComando() {
+		return comando;
 	}
 
 
-	/**
-	 * @return the parametri
-	 */
-	public String[] getParametri() {
-		return parametri;
+
+	public void setComando(Comandi comando) {
+		this.comando = comando;
 	}
 
 
-	/**
-	 * @param parametri the parametri to set
-	 */
-	public void setParametri(String[] parametri) {
-		this.parametri = parametri;
-	}
 
-
-	/**
-	 * @return the sessionId
-	 */
-	public Long getSessionId() {
+	public UUID getSessionId() {
 		return sessionId;
 	}
 
 
-	/**
-	 * @param sessionId the sessionId to set
-	 */
-	public void setSessionId(Long sessionId) {
+
+	public void setSessionId(UUID sessionId) {
 		this.sessionId = sessionId;
 	}
-	
+
+
+
+	public Object getParametro() {
+		return parametro;
+	}
+
+
+
+	public void setParametro(Object parametro) {
+		this.parametro = parametro;
+	}
+
 	
 	
 }

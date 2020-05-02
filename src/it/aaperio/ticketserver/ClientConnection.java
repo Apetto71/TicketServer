@@ -78,8 +78,14 @@ public class ClientConnection extends Thread {
 	        	logger.info("La connessione con il client � attiva");
 	        } else { logger.debug("La connessione non � andata a buon fine");}
 	        
-	        // Devo ottenere dal sistema il numero di sessione, da inviare al client per poi attendere da lui l'invio utente e password
-	        
+	        // Invio il numero di sessione al client
+	        logger.info("Preparo il messaggio per inviare sessionId e lo invio");
+	        Messaggio msgSessId = new Messaggio(this.sessionId);
+	        try {
+				this.out.writeObject(msgSessId);
+			} catch (IOException e1) {
+				logger.error("Errore nell'invio del sessionId", e1);
+			}
 	        
 	        // Mi metto in ascolto per la ricezione dei messaggi
 	        while (connected) {

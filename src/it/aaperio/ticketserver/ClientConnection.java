@@ -74,7 +74,7 @@ public class ClientConnection extends Thread {
 			this.connected = false;
 		}
 	        
-	        if (this.connected) {
+	        if (this.connected) { 
 	        	logger.info("La connessione con il client � attiva");
 	        } else { logger.debug("La connessione non � andata a buon fine");}
 	        

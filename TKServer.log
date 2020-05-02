@@ -6570,3 +6570,18 @@ java.io.EOFException
 2020-04-26 17:14:44 INFO [it.aaperio.ticketserver.ClientConnection:99] - La connessione � stata terminata, chiudo la socket
 2020-04-26 17:14:44 INFO [it.aaperio.ticketserver.ClientConnection:87] - messaggio ricevuto: it.aaperio.ticketserver.model.Messaggio@2848f4ef
 2020-04-26 17:14:44 INFO [it.aaperio.ticketserver.model.Model:67] - Aggiunto alla coda messaggi il messaggio it.aaperio.ticketserver.model.Messaggio@2848f4ef
+2020-05-02 11:11:25 INFO [it.aaperio.ticketserver.Configuration:78] - TicketServer attivo
+2020-05-02 11:11:25 DEBUG [it.aaperio.ticketserver.Configuration:111] - Definisco lo Stream in input per leggere il file di configurazione
+2020-05-02 11:11:25 DEBUG [it.aaperio.ticketserver.Configuration:113] - Inizializzato il FileInputStream in: java.io.FileInputStream@7b23ec81
+2020-05-02 11:11:25 DEBUG [it.aaperio.ticketserver.Configuration:120] - Caricati i parametri di configurazione: {DB_PORT=3128, DB_HOST=localhost, PORTA=30500}
+2020-05-02 11:11:25 DEBUG [it.aaperio.ticketserver.Configuration:125] - Chiudo lo stream per la lettura del file di configurazione
+2020-05-02 11:11:25 DEBUG [it.aaperio.ticketserver.Configuration:147] - Imposto la porta: 30500
+2020-05-02 11:11:25 DEBUG [it.aaperio.ticketserver.Configuration:157] - Imposto il DB_HOST: localhost
+2020-05-02 11:11:25 DEBUG [it.aaperio.ticketserver.Configuration:167] - Imposto il DB_PORT: 3128
+2020-05-02 11:11:25 DEBUG [it.aaperio.ticketserver.Configuration:142] - Ritorno la porta: 30500
+2020-05-02 11:11:25 INFO [it.aaperio.ticketserver.Ticketserver:21] - Preparo la ricezione di connessioni dai client su porta TCP: 30500
+2020-05-02 11:11:25 DEBUG [it.aaperio.ticketserver.Configuration:142] - Ritorno la porta: 30500
+2020-05-02 11:11:25 DEBUG [it.aaperio.ticketserver.Ticketserver:27] - Instanzio la classe Model per la gestione dei dati
+2020-05-02 11:11:25 INFO [it.aaperio.ticketserver.model.Model:28] - Inizializzazione del Model
+2020-05-02 11:11:25 DEBUG [it.aaperio.ticketserver.Configuration:142] - Ritorno la porta: 30500
+2020-05-02 11:11:25 INFO [it.aaperio.ticketserver.Ticketserver:31] - Mi metto in ascolto per accettare nuove connessioni sulla porta 30500

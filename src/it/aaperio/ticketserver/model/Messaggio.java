@@ -37,13 +37,14 @@ public class Messaggio implements Serializable {
 	public Messaggio(UUID s) {
 		super();
 		this.sessionId = s;
+		this.comando = Comandi.CONNECT ;
 	}
 
 	
 	/**
 	 * Costruttore di un nuovo messaggio specificando sessiomId e comando da eseguire
 	 * @param comando: Comando da eseguire
-	 * @param sessionId: Sessione a cui è destinato o da cui proviene il comando 
+	 * @param sessionId: Sessione a cui ï¿½ destinato o da cui proviene il comando 
 	 */
 	public Messaggio(Comandi comando, UUID sessionId) {
 		super();
@@ -52,6 +53,10 @@ public class Messaggio implements Serializable {
 	}
 
 
+	public Messaggio(Comandi comando, Object parametro) {
+		this.comando =  comando ;
+		this.parametro = parametro ;
+	}
 
 	public Comandi getComando() {
 		return comando;
@@ -85,6 +90,12 @@ public class Messaggio implements Serializable {
 
 	public void setParametro(Object parametro) {
 		this.parametro = parametro;
+	}
+
+
+	@Override
+	public String toString() {
+		return "Messaggio [sessionId=" + sessionId + ", comando=" + comando + ", parametro=" +  parametro + "]";
 	}
 
 	

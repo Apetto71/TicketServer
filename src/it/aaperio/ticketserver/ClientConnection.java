@@ -82,7 +82,8 @@ public class ClientConnection extends Thread {
 	        logger.info("Preparo il messaggio per inviare sessionId e lo invio");
 	        Messaggio msgSessId = new Messaggio(this.sessionId);
 	        try {
-				this.out.writeObject(msgSessId);
+				out.writeObject(msgSessId);
+				logger.debug("Inviato il sessionId: " + msgSessId.toString()) ;
 			} catch (IOException e1) {
 				logger.error("Errore nell'invio del sessionId", e1);
 			}
@@ -101,14 +102,14 @@ public class ClientConnection extends Thread {
 					logger.info("messaggio ricevuto: " + msgrcv) ;
 				 
 	        	// Verifica che il sessionId sia coerente con la connessione e solo in questo caso aggiungo
-				//  alla coda delle attività da svolgere
+				//  alla coda delle attivitï¿½ da svolgere
 				if (msgrcv.getSessionId().equals(this.sessionId)) {
 					model.addMsgToQueue(msgrcv) ;
 				} else {
 					logger.error("Numero di sessione non corrispondente. Chiudo la connessione");
 					this.closeSock();
 					break; 			// Esco dal loop 
-				}
+				}  
 	        	}
 	        	
 	        logger.info ("SessionId " + sessionId.toString() + " terminata");

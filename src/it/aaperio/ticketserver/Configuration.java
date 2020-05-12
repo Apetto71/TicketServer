@@ -25,8 +25,9 @@ public class Configuration {
 	private static String PORTA = new String("30500");
 	private static String DB_HOST = new String();
 	private static String DB_PORT = new String();
+	private static String NUM_THREAD_PROTOCOL = new String() ; 		// Numero di thread aperti per l'esecuzione delle richieste dei client
 			
-	// Costruttore vuoto perchè classe singleton		
+	// Costruttore vuoto perchï¿½ classe singleton		
 	private Configuration() {super();}; 
 	
 	public static Configuration getConfiguration() {
@@ -93,6 +94,8 @@ public class Configuration {
 					config.setProperty("PORTA", "30500");
 					config.setProperty("DB_HOST", "localhost");
 					config.setProperty("DB_PORT", "3128");
+					config.setProperty("NUM_THREAD_PROTOCOL", "3");
+
 					
 					try {
 						logger.debug("Definisco lo Stream per salvare i valori di default");
@@ -134,6 +137,7 @@ public class Configuration {
 				setPORTA(config.getProperty("PORTA"));
 				setDB_HOST(config.getProperty("DB_HOST"));
 				setDB_PORT(config.getProperty("DB_PORT"));
+				setNUM_THREAD_PROTOCOL(config.getProperty("NUM_THREAD_PROTOCOL"));
 				
 				return c;
 				}
@@ -167,6 +171,23 @@ public class Configuration {
 				logger.debug("Imposto il DB_PORT: " + dB_PORT);
 				DB_PORT = dB_PORT;
 			}
+
+			/**
+			 * @return the nUM_THREAD_PROTOCOL
+			 */
+			public static String getNUM_THREAD_PROTOCOL() {
+				logger.debug("Ritorno il NUM_THREAD_PROTOCOL: " + NUM_THREAD_PROTOCOL);
+				return NUM_THREAD_PROTOCOL;
+			}
+
+			/**
+			 * @param nUM_THREAD_PROTOCOL the nUM_THREAD_PROTOCOL to set
+			 */
+			public static void setNUM_THREAD_PROTOCOL(String nUM_THREAD_PROTOCOL) {
+				NUM_THREAD_PROTOCOL = nUM_THREAD_PROTOCOL;
+			}
+
+			
 				
 			
 			

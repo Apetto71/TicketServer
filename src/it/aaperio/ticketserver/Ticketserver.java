@@ -5,6 +5,8 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Ticketserver {
 
@@ -38,6 +40,9 @@ public class Ticketserver {
 				logger.error("Errore nella mettersi in ascolto sulla porta, errore del metodo accept", e);
 			} 
 			logger.info("Connessione accettata da: " + clientSocket.getInetAddress());
+			/*ExecutorService client = Executors.newCachedThreadPool() ; 
+			client.submit(new ClientConnection(clientSocket)) ;
+			logger.info ("Esecuzione del thread di gestione del client: ");*/
 			
 			ClientConnection client = new ClientConnection(clientSocket);
 			client.setModel(m);

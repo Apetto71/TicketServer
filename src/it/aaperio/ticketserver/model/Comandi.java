@@ -7,8 +7,8 @@ package it.aaperio.ticketserver.model;
  *
  */
 
-public class Comandi {
-	private enum Comando {
+
+	public enum Comandi {
 		CONNECT,
 		DISCONNECT,
 		USER,
@@ -19,4 +19,4 @@ public class Comandi {
 	
 	
 	
-}
+

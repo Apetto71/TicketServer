@@ -4,7 +4,9 @@ package it.aaperio.ticketserver.model;
 import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
 
@@ -17,18 +19,13 @@ public class  Model {
 	
 	static private Logger logger;
 	private Configuration config;
-	private Queue<Messaggio> codamsginput = new ConcurrentLinkedQueue<> () ; // Coda dei messaggi ricevuti
+	private Queue<Messaggio> codamsginput = new LinkedBlockingQueue<> () ; // Coda dei messaggi ricevuti
 	private Set<ClientConnection> clientConnessi ;				// Elenco dei client connessi 
-	// elenco delle connessioni attive
-	// tutti i ticket in stato aperto
-	
+	private ExecutorService protocol ;	
 	
 	private  Model() {
-		logger = Logger.getLogger(Model.class);
-		logger.info("Inizializzazione del Model");
-		codamsginput = new ConcurrentLinkedQueue<> ();
-		clientConnessi = new HashSet<ClientConnection>();
-		Model.inizialization();
+		
+		
 	} 		
 	
 	// Costruttore Singleton
@@ -38,19 +35,22 @@ public class  Model {
 		if (model == null) {
 			m = new Model();
 			model = m;
-			
+			m.inizialization();
 		} else m = model;
 		
 		return m;
 	}
 	
-	private static void inizialization() {
-		// Inserire l'inizializzazione di tutti i dati
+	private void inizialization() {
+		logger = Logger.getLogger(Model.class);
+		logger.info("Inizializzazione del Model");
+		clientConnessi = new HashSet<ClientConnection>();
+		protocol = Executors.newFixedThreadPool(Integer.parseInt(config.getNUM_THREAD_PROTOCOL())) ;
+		for (int i = 0; i < Integer.parseInt(config.getNUM_THREAD_PROTOCOL()); i++) {
+			protocol.submit(new Protocollo()) ;
+		}
 		
 		
-		// Caricamento del Database e preparazione della struttura dati
-		
-		// Preparazione del pool di connesioni
 		
 	}
 
@@ -70,6 +70,21 @@ public class  Model {
 		this.codamsginput.add(msg);
 		logger.info("Aggiunto alla coda messaggi il messaggio " + msg); 
 	}
+	
+	/**
+	 * Funzione che prende un elemento dalla coda e lo ritorna
+	 * @return Messaggio prelevato dalla coda
+	 */
+	public Messaggio pollMsgFromQueue () {
+		Messaggio m = new Messaggio() ;
+		
+		try {
+			m = ((LinkedBlockingQueue<Messaggio>) this.codamsginput).take();
+		} catch (InterruptedException e) {
+			logger.error("Errore nell'accesso alla coda dei messaggi" + e) ;
+		} 
+		return m ;
+	}
 
 	public Set<ClientConnection> getClientConnessi() {
 		return clientConnessi;
@@ -84,6 +99,7 @@ public class  Model {
 	 * @param c: Client da aggiungere
 	 */
 	public void addClientConnessi(ClientConnection c) {
+		logger.info ("Aggiungo il client al set dei client connessi") ;
 		this.clientConnessi.add(c);
 	}
 	
@@ -94,4 +110,7 @@ public class  Model {
 	public void removeClientConnessi(ClientConnection c) {
 		this.clientConnessi.remove(c);
 	}
+	
+	
+	
 }

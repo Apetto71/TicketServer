@@ -12,6 +12,8 @@ public class Configuration {
 	private static Properties sys_prop =  System.getProperties();
 	private static Properties config;
 	
+	private static boolean modificato = false ; 
+	
 	// Imposto parametri di configuarazione di default
 	private static final String FILE_SEPARATOR = sys_prop.getProperty("file.separator");
 	private static final String LINE_SEPARATOR = sys_prop.getProperty("line.separator");
@@ -24,9 +26,12 @@ public class Configuration {
 	// Parametri di connessione al server ed al DB
 	private static String PORTA = new String("30500");
 	private static String DB_HOST = new String();
-	private static String DB_PORT = new String();
+	private static String DB_PORT = new String("3306") ;
 	private static String NUM_THREAD_PROTOCOL = new String() ; 		// Numero di thread aperti per l'esecuzione delle richieste dei client
-			
+	private static String DB_SCHEMA ;
+	private static String DB_USER ;
+	private static String DB_PSW ;
+	
 	// Costruttore vuoto perch� classe singleton		
 	private Configuration() {super();}; 
 	
@@ -90,13 +95,16 @@ public class Configuration {
 					}
 					
 					//Definisco i parametri di default che vengono salvati nel file
-					logger.debug("Imposto i parametri di configurazione di default");
-					config.setProperty("PORTA", "30500");
-					config.setProperty("DB_HOST", "localhost");
-					config.setProperty("DB_PORT", "3128");
-					config.setProperty("NUM_THREAD_PROTOCOL", "3");
-
+					logger.debug("Imposto i parametri di configurazione di default") ;
+					config.setProperty("PORTA", "30500") ;
+					config.setProperty("DB_HOST", "localhost") ;
+					config.setProperty("DB_PORT", "3306") ;
+					config.setProperty("DB_SCHEMA", "tkserver") ;
+					config.setProperty("DB_USER", "tkserver") ;
+					config.setProperty("DB_PSW", "tkserver") ;
+					config.setProperty("NUM_THREAD_PROTOCOL", "3") ;
 					
+										
 					try {
 						logger.debug("Definisco lo Stream per salvare i valori di default");
 						FileOutputStream out;
@@ -133,11 +141,56 @@ public class Configuration {
 				
 				
 				//  imposto le variabili di classe con il contenuto di quanto letto
-				//dal file di configurazione
-				setPORTA(config.getProperty("PORTA"));
+				//dal file di configurazione. Se il valore è null imposto il valore di default
+				if (config.getProperty("PORTA") == null) {
+					config.setProperty("PORTA", "30500") ;
+					modificato = true ;
+				}
+				if (config.getProperty("DB_HOST") == null) {
+					config.setProperty("DB_HOST", "localhost") ;
+					modificato = true ;
+				}
+				if (config.getProperty("DB_PORT") == null) {
+					config.setProperty("DB_PORT", "30500") ;
+					modificato = true ;
+				}
+				if (config.getProperty("NUM_THREAD_PROTOCOL") == null) {
+					config.setProperty("NUM_THREAD_PROTOCOL", "3") ;
+					modificato = true ;
+				}
+				if (config.getProperty("DB_USER") == null) {
+					config.setProperty ("DB_USER", "tkserver") ;
+					modificato = true ;
+				}	
+				if (config.getProperty("DB_PSW") == null) {
+					config.setProperty("DB_PSW" , "tkserver") ;
+					modificato = true ;
+				}
+				if (config.getProperty("DB_SCHEMA") == null) {
+					config.setProperty("DB_SCHEMA", "tkserver") ;
+					modificato = true ;
+				}
+				
+				setPORTA(config.getProperty("PORTA")) ;
 				setDB_HOST(config.getProperty("DB_HOST"));
 				setDB_PORT(config.getProperty("DB_PORT"));
-				setNUM_THREAD_PROTOCOL(config.getProperty("NUM_THREAD_PROTOCOL"));
+				setNUM_THREAD_PROTOCOL(config.getProperty("NUM_THREAD_PROTOCOL")) ;
+				setDB_USER(config.getProperty("DB_USER"));
+				setDB_PSW(config.getProperty("DB_PSW")) ;
+				setDB_SCHEMA(config.getProperty("DB_SCHEMA")) ;
+
+				// Se qualche parametro è stato modificato vado a salvare il file di configurazione
+				try {
+					logger.debug("Definisco lo Stream per salvare i valori di default");
+					FileOutputStream out;
+					out = new FileOutputStream(config_file);
+					config.store(out, "Commento");
+					out.close();
+				} catch (IOException e) {
+					logger.error("Errore nel salvataggio dei parametri di configurazione",e);
+				}
+				
+				
 				
 				return c;
 				}
@@ -185,6 +238,48 @@ public class Configuration {
 			 */
 			public static void setNUM_THREAD_PROTOCOL(String nUM_THREAD_PROTOCOL) {
 				NUM_THREAD_PROTOCOL = nUM_THREAD_PROTOCOL;
+			}
+
+			/**
+			 * @return the dB_SCHEMA
+			 */
+			public static String getDB_SCHEMA() {
+				return DB_SCHEMA;
+			}
+
+			/**
+			 * @param dB_SCHEMA the dB_SCHEMA to set
+			 */
+			public static void setDB_SCHEMA(String dB_SCHEMA) {
+				DB_SCHEMA = dB_SCHEMA;
+			}
+
+			/**
+			 * @return the dB_USER
+			 */
+			public static String getDB_USER() {
+				return DB_USER;
+			}
+
+			/**
+			 * @param dB_USER the dB_USER to set
+			 */
+			public static void setDB_USER(String dB_USER) {
+				DB_USER = dB_USER;
+			}
+
+			/**
+			 * @return the dB_PSW
+			 */
+			public static String getDB_PSW() {
+				return DB_PSW;
+			}
+
+			/**
+			 * @param dB_PSW the dB_PSW to set
+			 */
+			public static void setDB_PSW(String dB_PSW) {
+				DB_PSW = dB_PSW;
 			}
 
 			

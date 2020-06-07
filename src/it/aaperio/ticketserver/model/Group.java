@@ -4,9 +4,10 @@ import java.util.HashSet;
 
 public class Group {
 	
-	private int idGroup;
-	private String groupName;
-	private HashSet<User> setOfUser;
+	private int idGroup ;
+	private String groupName ;
+	private HashSet<User> setOfUser ;
+	private boolean attivo ;
 	
 	
 	/**
@@ -27,17 +28,32 @@ public class Group {
 	
 	
 	
-	/**
+	
+	/** Costruttore con tutti i campi tranne l'insieme degli utenti appartenenti
 	 * @param idGroup
 	 * @param groupName
+	 * @param attivo
 	 */
-	public Group(int idGroup, String groupName) {
-		this();
+	public Group(int idGroup, String groupName, boolean attivo) {
+		super();
 		this.idGroup = idGroup;
 		this.groupName = groupName;
+		this.attivo = attivo;
 	}
 
-
+	/** Costruttore con tutti i campi 
+	 * @param idGroup
+	 * @param groupName
+	 * @param setOfUser
+	 * @param attivo
+	 */
+	public Group(int idGroup, String groupName, HashSet<User> setOfUser, boolean attivo) {
+		super();
+		this.idGroup = idGroup;
+		this.groupName = groupName;
+		this.setOfUser = setOfUser;
+		this.attivo = attivo;
+	}
 
 	/**
 	 * @return the idGroup
@@ -85,21 +101,15 @@ public class Group {
 	public void addUser (User u) {
 		this.setOfUser.add(u);
 	}
-	
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((groupName == null) ? 0 : groupName.hashCode());
+		result = prime * result + idGroup;
 		return result;
 	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -109,13 +119,13 @@ public class Group {
 		if (getClass() != obj.getClass())
 			return false;
 		Group other = (Group) obj;
-		if (groupName == null) {
-			if (other.groupName != null)
-				return false;
-		} else if (!groupName.equals(other.groupName))
+		if (idGroup != other.idGroup)
 			return false;
 		return true;
 	}
+	
+	
+	
 	
 
 }

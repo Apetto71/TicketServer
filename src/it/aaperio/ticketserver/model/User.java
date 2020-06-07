@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,15 +22,14 @@ public class User implements Serializable{
 	
 	
 	private int userid;
+	private String nome ;
+	private String cognome ;
 	private String username;
 	private String password;
 	private String emailAddress;
-	private LocalDateTime creationDate;
-	private LocalDate validTo;
-	private boolean changePasswordRequired = false;
-	private boolean Authenticated = false;
+	private LocalDateTime dataCreazione;
 	private Set<Group> setOfGroup;
-	private boolean enable = true; 
+	private boolean attivo ; 
 
 	/**
 	 * Construttore vuoto che per ora non deve fare niente
@@ -48,7 +46,7 @@ public class User implements Serializable{
 	 */
 
 	public User(String u, String p) {
-		this();
+		this() ;
 		setUsername(u);
 		setPassword(p);
 		
@@ -59,41 +57,58 @@ public class User implements Serializable{
 	 * @param u User da copiare
 	 */
 	public User (User u) {
+		this(); 
 		this.userid = u.userid ;
+		this.nome = u.nome ;
+		this.cognome = u.cognome ;
 		this.username = u.username ;
 		this.password = u.password ;
 		this.emailAddress = u.emailAddress ;
-		this.creationDate = u.creationDate ;
-		this.validTo = u.validTo ;
-		this.changePasswordRequired = u.changePasswordRequired ;
-		this.Authenticated = u.Authenticated ;
 		this.setOfGroup = u.setOfGroup ;
-		this.enable = u.enable ; 
+		this.attivo = u.attivo ; 
 	}
 	
-	/**
-	 * @param userid
+	
+	/** Costruisce istanza di User senza i campi che inserisce in automatico il DB
+	 * @param nome
+	 * @param cognome
 	 * @param username
 	 * @param password
 	 * @param emailAddress
-	 * @param creationDate
-	 * @param validTo
-	 * @param changePasswordRequired
-	 * Costruttore che imposta tutti i parametri
 	 */
-	public User(int userid, String username, String password, String emailAddress, LocalDateTime creationDate,
-			LocalDate validTo, boolean changePasswordrequired) {
-		this();
-		this.userid = userid;
+	public User(String nome, String cognome, String username, String password, String emailAddress) {
+		this(); 
+		this.nome = nome;
+		this.cognome = cognome;
 		this.username = username;
-		this.password = password;
+		setPassword(password) ;
 		this.emailAddress = emailAddress;
-		this.creationDate = creationDate;
-		this.validTo = validTo;
-		this.changePasswordRequired = changePasswordRequired;
 	}
 
-
+	/**
+	 * Crea l'utente con i seguenti campi valorizzati. Funzione da usare lato server dove la 
+	 * password è già criptata 
+	 * @param userid
+	 * @param nome
+	 * @param cognome
+	 * @param username
+	 * @param password
+	 * @param emailAddress
+	 * @param attivo
+	 * @param dataCreazione
+	 */
+	public User(int userid, String nome, String cognome, String username, String password, String emailAddress, 
+			Boolean attivo, LocalDateTime dataCreazione) {
+		this() ;
+		this.userid = userid;
+		this.nome = nome;
+		this.cognome = cognome;
+		this.username = username ;
+		this.password = password ;
+		this.emailAddress = emailAddress;
+		this.attivo = attivo ;
+		this.dataCreazione = dataCreazione ;
+	}
 
 	/**
 	 * @return the userid
@@ -122,7 +137,7 @@ public class User implements Serializable{
 	 *            the username to set
 	 */
 	public void setUsername(String username) {
-		this.username = username;
+		this.username = username.toLowerCase();
 	}
 
 	/**
@@ -141,99 +156,25 @@ public class User implements Serializable{
 	}
 
 	/**
-	 * @return the creationDate
+	 * @return the dataCreazione
 	 */
-	public LocalDateTime getCreationDate() {
-		return creationDate;
+	public LocalDateTime getDataCreazione() {
+		return dataCreazione;
 	}
 
 	/**
 	 * @param creationDate
 	 *            the creationDate to set
 	 */
-	public void setCreationDate(LocalDateTime creationDate) {
-		this.creationDate = creationDate;
-	}
-
-	/**
-	 * @return the validTo
-	 */
-	public LocalDate getValidTo() {
-		return validTo;
-	}
-
-	/**
-	 * @param validTo
-	 *            the validTo to set
-	 */
-	public void setValidTo(LocalDate validTo) {
-		this.validTo = validTo;
-	}
-
-
-
-	
-
-	/**
-	 * @return the password
-	 */
-	public String getPassword() {
-		return password;
+	public void setCreationDate(LocalDateTime dataCreazione) {
+		this.dataCreazione = dataCreazione;
 	}
 
 	
-	/**
-	 * @param password
-	 *            Imposta il campo password criptato, deve usarlo il client che
-	 *            dopo aver ricevuto la password in chiaro dall'utente la cripta
-	 *            prima di inviarla al server 
-	 */
-	public void setPassword(String password) {
-		
-		try {
-			this.password = setHashedPassword(password);
-		} catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			logger.error("Errore nell'impostazione della password in formato criptato\n", e);
-		}
-	}
 	
 	
 
-	/**
-	 * @return the changePasswordRequired
-	 */
-	public boolean isChangePasswordRequired() {
-		return changePasswordRequired;
-	}
-
-
-
-	/**
-	 * @param changePasswordRequired the changePasswordRequired to set
-	 */
-	public void setChangePasswordRequired(boolean changePasswordRequired) {
-		this.changePasswordRequired = changePasswordRequired;
-	}
-
 	
-
-	/**
-	 * @return the autenticated
-	 */
-	public boolean isAuthenticated() {
-		return Authenticated;
-	}
-
-
-
-	/**
-	 * @param autenticated the autenticated to set
-	 */
-	public void setAuthenticated(boolean authenticated) {
-		Authenticated = authenticated;
-	}
-
 
 	/**
 	 * @return the setOfGroup
@@ -254,35 +195,64 @@ public class User implements Serializable{
 	/**
 	 * @return the enable
 	 */
-	public boolean isEnable() {
-		return enable;
+	public boolean isAttivo() {
+		return attivo;
 	}
 
 	/**
 	 * @param enable the enable to set
 	 */
-	public void setEnable(boolean enable) {
-		this.enable = enable;
+	public void setEnable(boolean attivo) {
+		this.attivo = attivo;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
+	
+		
+	/**
+	 * @return the nome
 	 */
+	public String getNome() {
+		return nome;
+	}
+
+	/**
+	 * @param nome the nome to set
+	 */
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+	/**
+	 * @return the cognome
+	 */
+	public String getCognome() {
+		return cognome;
+	}
+
+	/**
+	 * @param cognome the cognome to set
+	 */
+	public void setCognome(String cognome) {
+		this.cognome = cognome;
+	}
+
+	
+
+	@Override
+	public String toString() {
+		return "User [userid=" + userid + ", nome=" + nome + ", cognome=" + cognome + ", username=" + username
+				+ ", password=" + password + ", emailAddress=" + emailAddress + ", dataCreazione=" + dataCreazione
+				+ ", attivo=" + attivo + "]";
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((username == null) ? 0 : username.hashCode());
+		result = prime * result + userid;
 		return result;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -292,24 +262,9 @@ public class User implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
-		if (username == null) {
-			if (other.username != null)
-				return false;
-		} else if (!username.equals(other.username))
+		if (userid != other.userid)
 			return false;
 		return true;
-	}
-
-	
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "User [userid=" + userid + ", username=" + username + ", password=" + password
-				+ ", emailAddress=" + emailAddress + ", changePasswordRequired=" + changePasswordRequired + ", Authenticated="
-				+ Authenticated + "]";
 	}
 
 	private String setHashedPassword(String p) throws UnsupportedEncodingException, NoSuchAlgorithmException {
@@ -342,31 +297,43 @@ public class User implements Serializable{
 		return sb.toString();
 	}
 	
-	/** 
-	 * Funzione chiamata dal Server
-	 * L'utente viene autenticato se la password dell'utente coincide con 
-	 * quella dell'omonimo utente che il server conosce
-	 * @param u: Utente su cui fare la verifica
-	 * @return
-	 */
-	public boolean checkAuthentication (User u) {
-		// Restituisce true se le password inviata dall'utente coincide con 
-		// quella sul DB
-		boolean result = false;
-		if (this.password.equals(u.password)){
-			this.setAuthenticated(true);
-			result = true;
-		} else {
-			result = false; 
-		} 
 		
-		return result;
-	}
-	
-	
 	public void addGroup (Group g) {
 		this.setOfGroup.add(g);
 	}
 
+	/**
+	 * @return the password
+	 */
+	public String getPassword() {
+		return password;
+	}
+
 	
+	/**
+	 * Imposta il campo password criptato, deve usarlo il client che
+	 * dopo aver ricevuto la password in chiaro dall'utente la cripta
+	 * prima di inviarla al server
+	 * @param password
+	 *             
+	 */
+	public void setPassword(String password) {
+		
+		try {
+			this.password = setHashedPassword(password);
+		} catch (UnsupportedEncodingException | NoSuchAlgorithmException e) {
+			logger.error("Errore nell'impostazione della password in formato criptato\n", e);
+			throw new RuntimeException() ;
+		}
+	}
+	
+	/**
+	 * Imposta una nuova password
+	 * @param nuova Nuova password da impostare
+	 * @return
+	 */
+	public void changePsw (String nuova) {
+		setPassword(nuova) ;
+		
+	}
 }

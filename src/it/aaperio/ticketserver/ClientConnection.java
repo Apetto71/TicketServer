@@ -23,6 +23,7 @@ public class ClientConnection extends Thread {
 	private ObjectOutputStream out;					// Buffer per scrivere sullo stream
 	private boolean connected = false;
 	private Logger logger = Logger.getLogger(ClientConnection.class);	// logger
+	private boolean toClose = false ; 
 
 	// Costruttore della classe con input il riferimento alla socket
 	public ClientConnection (Socket clientSock) {
@@ -89,14 +90,17 @@ public class ClientConnection extends Thread {
 			}
 	        
 	        // Mi metto in ascolto per la ricezione dei messaggi
-	        while (connected) {
+	        while (!toClose) {
 	        	Messaggio msgrcv = new Messaggio();
 	        	try {
 						msgrcv = (Messaggio) this.in.readObject();
 					} catch (IOException e) {
 						logger.error("Lettura dallo Streamin errore", e);
+						this.setToClose(true) ;
 						closeSock();
 					} catch (ClassNotFoundException e) {
+						closeSock() ; 
+						this.setToClose(true) ;
 						logger.error("Errore in ricezione dallo Stream", e) ;
 					} 
 					logger.info("messaggio ricevuto: " + msgrcv) ;
@@ -108,7 +112,7 @@ public class ClientConnection extends Thread {
 				} else {
 					logger.error("Numero di sessione non corrispondente. Chiudo la connessione");
 					this.closeSock();
-					break; 			// Esco dal loop 
+					this.setToClose(true);
 				}  
 	        	}
 	        	
@@ -128,5 +132,62 @@ public class ClientConnection extends Thread {
 		// Se sono arrivato a chiudere la socket devo anche cancellare la connessione
 		// dall'elenco di connessioni del model
 		this.model.removeClientConnessi(this);
+		
+		
 	}
+
+
+
+	/**
+	 * @return the toClose
+	 */
+	public boolean isToClose() {
+		return toClose;
+	}
+
+
+	/**
+	 * @param toClose the toClose to set
+	 */
+	public void setToClose(boolean toClose) {
+		this.toClose = toClose;
+	}
+
+
+
+	/**
+	 * @return the out
+	 */
+	public ObjectOutputStream getOut() {
+		return out;
+	}
+
+
+
+	/**
+	 * @param out the out to set
+	 */
+	public void setOut(ObjectOutputStream out) {
+		this.out = out;
+	}
+
+
+
+	/**
+	 * @return the sessionId
+	 */
+	public UUID getSessionId() {
+		return sessionId;
+	}
+
+
+
+	/**
+	 * @param sessionId the sessionId to set
+	 */
+	public void setSessionId(UUID sessionId) {
+		this.sessionId = sessionId;
+	}
+	
+	
 }

@@ -42,6 +42,15 @@ public class Messaggio implements Serializable {
 
 	
 	/**
+	 * @param comando
+	 */
+	public Messaggio(Comandi comando) {
+		super();
+		this.comando = comando;
+	}
+
+
+	/**
 	 * Costruttore di un nuovo messaggio specificando sessiomId e comando da eseguire
 	 * @param comando: Comando da eseguire
 	 * @param sessionId: Sessione a cui � destinato o da cui proviene il comando 

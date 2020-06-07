@@ -11,10 +11,13 @@ package it.aaperio.ticketserver.model;
 	public enum Comandi {
 		CONNECT,
 		DISCONNECT,
+		CLOSEBYSRV,
 		USER,
 		POPUP,
 		AGGIORNA_LISTA_TICKET,
-		RICERCA
+		RICERCA,
+		AUTORIZZATO,
+		NON_AUTORIZZATO,
 	};
 	
 	
